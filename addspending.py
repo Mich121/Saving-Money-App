@@ -1,14 +1,16 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import sqlite3, style, globalvariable
+import sqlite3, style
 
 con = sqlite3.connect("money.db")
 cur = con.cursor()
 
 class AddSpending(QWidget):
-    def __init__(self):
+    def __init__(self, salary, spend):
         super().__init__()
+        self.salary = salary
+        self.spend = spend
         self.setGeometry(350,200,350,550)
         self.setFont(QFont("Times", 13))
         self.setStyleSheet("background-color:red; color:white;") 
@@ -76,28 +78,28 @@ class AddSpending(QWidget):
         name = self.activityEntry.text()
         category = self.chooseCategory.currentText()
 
-        if float(amount) <= (globalvariable.salary - globalvariable.spend):
-            globalvariable.homespending = 0.0
-            globalvariable.busspending = 0.0
-            globalvariable.clothesspending = 0.0
-            globalvariable.eatspending = 0.0
-            globalvariable.phonespending = 0.0
-            globalvariable.carspending = 0.0
-            globalvariable.economy = 0.0
+        if float(amount) <= (self.salary - self.spend):
+            self.homespending = 0.0
+            self.busspending = 0.0
+            self.clothesspending = 0.0
+            self.eatspending = 0.0
+            self.phonespending = 0.0
+            self.carspending = 0.0
+            self.economy = 0.0
             if category == "household expenses":
-                globalvariable.homespending += float(amount)
+                self.homespending += float(amount)
             elif category == "public transport":
-                globalvariable.busspending += float(amount)
+                self.busspending += float(amount)
             elif category == "clothes":
-                globalvariable.clothesspending += float(amount)
+                self.clothesspending += float(amount)
             elif category == "food":
-                globalvariable.eatspending += float(amount)
+                self.eatspending += float(amount)
             elif category == "gadgets":
-                globalvariable.phonespending += float(amount)
+                self.phonespending += float(amount)
             elif category == "car":
-                globalvariable.carspending += float(amount)
+                self.carspending += float(amount)
             elif category == "economy":
-                globalvariable.economy += float(amount)
+                self.economy += float(amount)
 
             if (name and amount != ""):
                 try:
@@ -106,7 +108,7 @@ class AddSpending(QWidget):
                     con.commit()
 
                     query2 = "INSERT INTO 'spendingcategories' (homespending, busspending, clothesspending, eatspending, phonespending, carspending, economy) VALUES(?,?,?,?,?,?,?)"
-                    cur.execute(query2, (globalvariable.homespending, globalvariable.busspending, globalvariable.clothesspending, globalvariable.eatspending, globalvariable.phonespending, globalvariable.carspending, globalvariable.economy))
+                    cur.execute(query2, (self.homespending, self.busspending, self.clothesspending, self.eatspending, self.phonespending, self.carspending, self.economy))
                     con.commit()
                     QMessageBox.information(self,"Warning","Spend has been added to data base!")
                     self.close()
